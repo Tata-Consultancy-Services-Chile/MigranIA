@@ -86,12 +86,14 @@ def createSource(filename,content):
         print("creando carpeta output")
         os.mkdir("./output")
 
-
-
     #verificar si archivo existe, sino se crea un archivo nuevo
     path = "./output/"+ filename
     if os.path.exists(path):
         print("El archivo ya existe")
+        # salir de la aplicacion
+        sys.exit(-1);
+        
+       
     else:
         print("creando  archivo  =>"+filename)
         file = open("./output/" + (filename),"w")
