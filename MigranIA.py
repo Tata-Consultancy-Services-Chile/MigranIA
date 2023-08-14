@@ -4,7 +4,7 @@ import openai  # pip install openai
 import typer  # pip install "typer[all]"
 from rich import print  # pip install rich
 from rich.table import Table
-
+import sys
 
 EOF = "#############################################"
 
@@ -88,7 +88,8 @@ def createSource(filename,content):
     #verificar si archivo existe, sino se crea un archivo nuevo
     path = "./output/"+ filename
     if os.path.exists(path):
-        print("El archivo ya existe")
+        print("El archivo ya existe - Proceso se ha detenido.")
+        print("Borre los archivos para continuar")
         # salir de la aplicacion
         sys.exit(-1);
         
