@@ -5,6 +5,7 @@ import typer  # pip install "typer[all]"
 from rich import print  # pip install rich
 from rich.table import Table
 import sys
+import shutil
 
 EOF = "#############################################"
 
@@ -66,7 +67,12 @@ def main():
         else:
             if line != EOF:
                 contentFile += line + "\n"
-            else:               
+            else:
+                ### variables usadas para descomprimir el archivo.
+                ####   filename = "./xxx.zip"
+                ####   outputFolder = "./f1"
+                ####   extractZipFile(filename, outputFolder)
+
                 createSource(nameFile,contentFile)
                 isNameFile=True
                 nameFile =""
@@ -115,7 +121,10 @@ def readContentFromPath(path):
     with open(path, "r") as f:
         content = f.read()
     return content
-
+    
+def extractZipFile(filename,outputFolder):
+    shutil.unpack_archive(filename, outputFolder)   
+    return "["+filename+"] archivo descomprimido exitosamente"
 
 
 if __name__ == "__main__":
