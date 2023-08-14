@@ -80,11 +80,10 @@ def createSource(filename,content):
 
 
     #verificar si carpeta existe, sino se crea una en la ruta especificada
-    if os.path.exists("./output"):
-        print("Los fuentes seran dejados en la carpeta 'output'")
-    else:
+    if not os.path.exists("./output"):
         print("creando carpeta output")
         os.mkdir("./output")
+    print("Los fuentes seran dejados en la carpeta 'output'")
 
     #verificar si archivo existe, sino se crea un archivo nuevo
     path = "./output/"+ filename
