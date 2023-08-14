@@ -28,9 +28,9 @@ def main():
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
     print("🤖 [bold green]Migracion asistida por ChatGPT[/bold green]")
-    origin_path = typer.prompt("\nIngrese ruta de fuentes a migrar")
-    origin_tech = typer.prompt("\nIngrese tenologia de origen")
-    destiny_tech = typer.prompt("\nIngrese tecnologia de destino")
+    origin_path =  typer.prompt("\nIngrese ruta de fuentes a migrar :")
+    origin_tech =  typer.prompt("\nIngrese tecnologia de Origen  :")
+    destiny_tech = typer.prompt("\nIngrese tecnologia de Destino :")
     sources = readFilePathsFromPath(origin_path)
     
     prompt = PROMPT_MIGRACION.format(fuentes=sources, tecnologia_original=origin_tech, tecnologia_destino=destiny_tech)
