@@ -98,30 +98,31 @@ def createSource(filename,content):
         print("Borre los archivos para continuar")
         # salir de la aplicacion
         sys.exit(-1);
-        
-       
+               
     else:
         print("creando  archivo  =>"+filename)
         file = open("./output/" + (filename),"w")
         file.write(content)
         file.close()
 
-#crear funcion para leer nombres de archivos de un directorio y iterar cada nonmbre de archivo
+
+#crear funcion para leer nombres de archivos de un directorio y iterar cada nombre de archivo
 def readFilePathsFromPath(path):
     contentSourcesFile = ""
     
     for root, dirs, files in os.walk(path):
         for file in files:
-            contentSourcesFile += "\n" + file + readContentFromPath(path +"\\" +file) + "\n"        
+            if file.endswith(".java"):
+                contentSourcesFile += "\n" + file + readContentFromPath(path +"\\" +file) + "\n"        
     return contentSourcesFile
 
 
-
 def readContentFromPath(path):
-    with open(path, "r") as f:
+    with open(path, "r", encoding="utf-8") as f:
         content = f.read()
     return content
-    
+
+
 ## def extractZipFile(filename,outputFolder):
 ##    shutil.unpack_archive(filename, outputFolder)   
 ##    return "["+filename+"] archivo descomprimido exitosamente"
