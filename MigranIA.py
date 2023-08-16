@@ -32,7 +32,7 @@ def main():
     origin_path =  typer.prompt("\nIngrese ruta de fuentes a migrar :")
     origin_tech =  typer.prompt("\nIngrese tecnologia de Origen  :")
     destiny_tech = typer.prompt("\nIngrese tecnologia de Destino :")
-    sources = readFilePathsFromPath(origin_path)
+    sources = readFilePathsFromPath(origin_path, origin_tech)
     
     prompt = PROMPT_MIGRACION.format(fuentes=sources, tecnologia_original=origin_tech, tecnologia_destino=destiny_tech)
  
@@ -55,7 +55,6 @@ def main():
     
     #itera la lectura del response_content linea a linea
     isNameFile = True
-
     nameFile =""
     contentFile =""
 
@@ -73,11 +72,10 @@ def main():
                 ####   outputFolder = "./f1"
                 ####   extractZipFile(filename, outputFolder)
 
-                createSource(nameFile,contentFile)
+                createSource(origin_tech, nameFile,contentFile)
                 isNameFile=True
                 nameFile =""
                 contentFile =""
-
 
 def createSource(filename,content):
     table = Table(filename)
@@ -95,9 +93,7 @@ def createSource(filename,content):
     path = "./output/"+ filename
     if os.path.exists(path):
         print("El archivo ya existe - Proceso se ha detenido.")
-        print("Borre los archivos para continuar")
-        # salir de la aplicacion
-        sys.exit(-1);
+        salir("Borre los archivos para continuar",-1)
                
     else:
         print("creando  archivo  =>"+filename)
@@ -107,14 +103,18 @@ def createSource(filename,content):
 
 
 #crear funcion para leer nombres de archivos de un directorio y iterar cada nombre de archivo
-def readFilePathsFromPath(path):
+#verifica que la extension de archivos de origen sea .java
+def readFilePathsFromPath(path, origin_tech):
     contentSourcesFile = ""
-    
-    for root, dirs, files in os.walk(path):
-        for file in files:
-            if file.endswith(".java"):
-                contentSourcesFile += "\n" + file + readContentFromPath(path +"\\" +file) + "\n"        
-    return contentSourcesFile
+
+    if origin_tech in "java":
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith(".java"):
+                    contentSourcesFile += "\n" + file + readContentFromPath(path +"\\" +file) + "\n"        
+        return contentSourcesFile
+    else:
+        salir("\n * Lenguage '" + origin_tech+ "' Aun no se encuentra implementado para traduccir", -2)
 
 
 def readContentFromPath(path):
@@ -122,11 +122,13 @@ def readContentFromPath(path):
         content = f.read()
     return content
 
-
 ## def extractZipFile(filename,outputFolder):
 ##    shutil.unpack_archive(filename, outputFolder)   
 ##    return "["+filename+"] archivo descomprimido exitosamente"
 
+def salir(mensaje, codSalida):
+    print(mensaje)
+    sys.exit(codSalida);
 
 if __name__ == "__main__":
     typer.run(main)
