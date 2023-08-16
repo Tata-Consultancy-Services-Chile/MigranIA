@@ -122,9 +122,9 @@ def readContentFromPath(path):
         content = f.read()
     return content
     
-def extractZipFile(filename,outputFolder):
-    shutil.unpack_archive(filename, outputFolder)   
-    return "["+filename+"] archivo descomprimido exitosamente"
+## def extractZipFile(filename,outputFolder):
+##    shutil.unpack_archive(filename, outputFolder)   
+##    return "["+filename+"] archivo descomprimido exitosamente"
 
 
 if __name__ == "__main__":
