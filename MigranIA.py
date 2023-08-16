@@ -6,6 +6,8 @@ from rich import print  # pip install rich
 from rich.table import Table
 import sys
 import shutil
+from datetime import datetime
+
 
 EOF = "#############################################"
 
@@ -39,8 +41,7 @@ def main():
     requestIA = prompt
 
     # Contexto del asistente
-    context = {"role": "system",
-               "content": "Eres un developer senior."}
+    context = {"role": "system", "content": "Eres un developer senior."}
     messages = [context]
 
     messages.append({"role": "user", "content": requestIA})
@@ -52,11 +53,13 @@ def main():
     response_content = responseIA.choices[0].message.content
     messages.append({"role": "assistant", "content": response_content})
     
-    
+###    createSource(destiny_tech, "test","xxx")
+
     #itera la lectura del response_content linea a linea
     isNameFile = True
     nameFile =""
     contentFile =""
+    temporarypath = datetime.now().strftime("%Y%m%d%H%M%S")
 
     for line in response_content.splitlines():
         if isNameFile:
@@ -72,35 +75,40 @@ def main():
                 ####   outputFolder = "./f1"
                 ####   extractZipFile(filename, outputFolder)
 
-                createSource(origin_tech, nameFile,contentFile)
+                createSource(temporarypath, nameFile, contentFile)
                 isNameFile=True
                 nameFile =""
                 contentFile =""
 
-def createSource(filename,content):
+def createSource(temporarypath, filename,content):
     table = Table(filename)
     table.add_row(content)
     print(table)    
 
+    relativepath= "./output"
+    ##temporaryPath = destiny_tech+"_"+ datetime.now().strftime("%Y%m%d%H%M%S")
+    
+    outputmainfolder =relativepath +"/"+ temporarypath;
 
     #verificar si carpeta existe, sino se crea una en la ruta especificada
-    if not os.path.exists("./output"):
-        print("creando carpeta output")
-        os.mkdir("./output")
-    print("Los fuentes seran dejados en la carpeta 'output'")
+    if not os.path.exists(relativepath):
+        os.mkdir(relativepath)
+        os.mkdir(outputmainfolder)
+        print("creando ",relativepath)
+        print("creando ",outputmainfolder)
+   
+    if not os.path.exists(outputmainfolder):
+        os.mkdir(outputmainfolder);
+        print("creando ",outputmainfolder)
 
+    print("Los fuentes se crearan en la carpeta '"+outputmainfolder+"'")
+  
     #verificar si archivo existe, sino se crea un archivo nuevo
-    path = "./output/"+ filename
-    if os.path.exists(path):
-        print("El archivo ya existe - Proceso se ha detenido.")
-        salir("Borre los archivos para continuar",-1)
-               
-    else:
-        print("creando  archivo  =>"+filename)
-        file = open("./output/" + (filename),"w")
-        file.write(content)
-        file.close()
-
+    path = outputmainfolder +"/"+ filename
+    print("creando  archivo  =>"+path)
+    file = open(path,"w")
+    file.write(content)
+    file.close()
 
 #crear funcion para leer nombres de archivos de un directorio y iterar cada nombre de archivo
 #verifica que la extension de archivos de origen sea .java
