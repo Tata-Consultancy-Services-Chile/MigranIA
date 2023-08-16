@@ -37,23 +37,21 @@ def main():
     sources = readFilePathsFromPath(origin_path, origin_tech)
     
     prompt = PROMPT_MIGRACION.format(fuentes=sources, tecnologia_original=origin_tech, tecnologia_destino=destiny_tech)
- 
+    
     requestIA = prompt
-
+    
     # Contexto del asistente
     context = {"role": "system", "content": "Eres un developer senior."}
     messages = [context]
-
+    
     messages.append({"role": "user", "content": requestIA})
     responseIA = openai.ChatCompletion.create(
         model="gpt-3.5-turbo", messages=messages)
     
     #print(responseIA)
-
+    
     response_content = responseIA.choices[0].message.content
     messages.append({"role": "assistant", "content": response_content})
-    
-###    createSource(destiny_tech, "test","xxx")
 
     #itera la lectura del response_content linea a linea
     isNameFile = True
@@ -70,11 +68,6 @@ def main():
             if line != EOF:
                 contentFile += line + "\n"
             else:
-                ### variables usadas para descomprimir el archivo.
-                ####   filename = "./xxx.zip"
-                ####   outputFolder = "./f1"
-                ####   extractZipFile(filename, outputFolder)
-
                 createSource(temporarypath, nameFile, contentFile)
                 isNameFile=True
                 nameFile =""
@@ -103,22 +96,39 @@ def createSource(temporarypath, filename,content):
 
     print("Los fuentes se crearan en la carpeta '"+outputmainfolder+"'")
   
-    #verificar si archivo existe, sino se crea un archivo nuevo
+   
     path = outputmainfolder +"/"+ filename
     print("creando  archivo  =>"+path)
     file = open(path,"w")
     file.write(content)
     file.close()
 
-#crear funcion para leer nombres de archivos de un directorio y iterar cada nombre de archivo
+#crear funcion para leer nombres de archivos de un directorio e iterar cada nombre de archivo
 #verifica que la extension de archivos de origen sea .java
 def readFilePathsFromPath(path, origin_tech):
     contentSourcesFile = ""
 
+    ## INICIO - DESCOMPRIMIENDO ARCHIVO.
+    filename ="";
+    ##Buscar archivo primer archivo .zip dentro del path
+    for root, dirs , files in os.walk (path ):
+        for file in files:
+            if file.endswith(".zip"):
+                filename = path +"\\"+ file
+                print("archivo zip encontrado =>"+filename)
+                break
+
+    if not os.path.exists(filename):
+        salir("Abortando ejecucion, archivo .zip No Existe dentro del directorio", -4)
+
+    extractZipFile(filename, path)
+    ## TERMINO - DESCOMPRIMIENDO ARCHIVO.
+
     if not os.path.exists(path):
-        salir("\n * El directorio '"+path+"' especificada no existe", -1)
+        salir("\n * El directorio '"+path+"' especificado No existe", -1)
  
     if "java" in origin_tech:
+        print("Trabajando en la traduccion.... Espere un momento por favor...")
         for root, dirs, files in os.walk(path):
             for file in files:
                 if file.endswith(".java"):
@@ -133,9 +143,20 @@ def readContentFromPath(path):
         content = f.read()
     return content
 
-## def extractZipFile(filename,outputFolder):
-##    shutil.unpack_archive(filename, outputFolder)   
-##    return "["+filename+"] archivo descomprimido exitosamente"
+def extractZipFile(filename,outputFolder):
+  
+    if not os.path.exists(outputFolder):
+        os.mkdir(outputFolder)
+
+    if os.path.exists(filename):
+        shutil.unpack_archive(filename, outputFolder) 
+        msg= ("["+filename+"] archivo descomprimido exitosamente")
+        print(msg)
+    else:
+        salir("Archivo "+filename+" No encontrado.!",-3);
+    
+    return ""
+
 
 def salir(mensaje, codSalida):
     print(mensaje)
