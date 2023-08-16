@@ -107,14 +107,17 @@ def createSource(filename,content):
 def readFilePathsFromPath(path, origin_tech):
     contentSourcesFile = ""
 
-    if origin_tech in "java":
+    if not os.path.exists(path):
+        salir("\n * El directorio '"+path+"' especificada no existe", -1)
+ 
+    if "java" in origin_tech:
         for root, dirs, files in os.walk(path):
             for file in files:
                 if file.endswith(".java"):
                     contentSourcesFile += "\n" + file + readContentFromPath(path +"\\" +file) + "\n"        
         return contentSourcesFile
     else:
-        salir("\n * Lenguage '" + origin_tech+ "' Aun no se encuentra implementado para traduccir", -2)
+        salir("\n * Lenguage de origen '" + origin_tech+ "' Aun no se encuentra implementado para traducir.", -2)
 
 
 def readContentFromPath(path):
