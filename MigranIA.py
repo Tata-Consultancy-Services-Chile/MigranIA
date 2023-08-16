@@ -8,9 +8,7 @@ import sys
 import shutil
 from datetime import datetime
 
-
 EOF = "#############################################"
-
 
 PROMPT_MIGRACION = """
     Migra los siguientes codigos fuentes : \n{fuentes}\n los cuales estan en {tecnologia_original}, debes migrar esto a {tecnologia_destino},
@@ -36,8 +34,10 @@ def main():
     destiny_tech = typer.prompt("\nIngrese tecnologia de Destino :")
     sources = readFilePathsFromPath(origin_path, origin_tech)
     
-    prompt = PROMPT_MIGRACION.format(fuentes=sources, tecnologia_original=origin_tech, tecnologia_destino=destiny_tech)
-    
+    prompt = PROMPT_MIGRACION.format(fuentes=sources, 
+                                    tecnologia_original=origin_tech, 
+                                    tecnologia_destino=destiny_tech)
+
     requestIA = prompt
     
     # Contexto del asistente
@@ -87,16 +87,11 @@ def createSource(temporarypath, filename,content):
     if not os.path.exists(relativepath):
         os.mkdir(relativepath)
         os.mkdir(outputmainfolder)
-        print("creando ",relativepath)
-        print("creando ",outputmainfolder)
    
     if not os.path.exists(outputmainfolder):
         os.mkdir(outputmainfolder);
-        print("creando ",outputmainfolder)
 
     print("Los fuentes se crearan en la carpeta '"+outputmainfolder+"'")
-  
-   
     path = outputmainfolder +"/"+ filename
     print("creando  archivo  =>"+path)
     file = open(path,"w")
@@ -108,7 +103,7 @@ def createSource(temporarypath, filename,content):
 def readFilePathsFromPath(path, origin_tech):
     contentSourcesFile = ""
 
-    ## INICIO - DESCOMPRIMIENDO ARCHIVO.
+    ## ------------------  INICIO - DESCOMPRIMIENDO ARCHIVO.------------------
     filename ="";
     ##Buscar archivo primer archivo .zip dentro del path
     for root, dirs , files in os.walk (path ):
@@ -122,7 +117,7 @@ def readFilePathsFromPath(path, origin_tech):
         salir("Abortando ejecucion, archivo .zip No Existe dentro del directorio", -4)
 
     extractZipFile(filename, path)
-    ## TERMINO - DESCOMPRIMIENDO ARCHIVO.
+    ##------------------ TERMINO - DESCOMPRIMIENDO ARCHIVO.------------------
 
     if not os.path.exists(path):
         salir("\n * El directorio '"+path+"' especificado No existe", -1)
@@ -144,7 +139,6 @@ def readContentFromPath(path):
     return content
 
 def extractZipFile(filename,outputFolder):
-  
     if not os.path.exists(outputFolder):
         os.mkdir(outputFolder)
 
@@ -154,7 +148,6 @@ def extractZipFile(filename,outputFolder):
         print(msg)
     else:
         salir("Archivo "+filename+" No encontrado.!",-3);
-    
     return ""
 
 
