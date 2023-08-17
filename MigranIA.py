@@ -104,19 +104,19 @@ def readFilePathsFromPath(path, origin_tech):
     contentSourcesFile = ""
 
     ## ------------------  INICIO - DESCOMPRIMIENDO ARCHIVO.------------------
-    filename ="";
-    ##Buscar archivo primer archivo .zip dentro del path
-    for root, dirs , files in os.walk (path ):
-        for file in files:
-            if file.endswith(".zip"):
-                filename = path +"\\"+ file
-                print("archivo zip encontrado =>"+filename)
-                break
-
-    if not os.path.exists(filename):
-        salir("Abortando ejecucion, archivo .zip No Existe dentro del directorio", -4)
-
-    extractZipFile(filename, path)
+#####   filename ="";
+#####   ##Buscar archivo primer archivo .zip dentro del path
+#####   for root, dirs , files in os.walk (path ):
+#####       for file in files:
+#####           if file.endswith(".zip"):
+#####               filename = path +"\\"+ file
+#####               print("archivo zip encontrado =>"+filename)
+#####               break
+#####
+#####   if not os.path.exists(filename):
+#####       salir("Abortando ejecucion, archivo .zip No Existe dentro del directorio", -4)
+#####
+#####   extractZipFile(filename, path)
     ##------------------ TERMINO - DESCOMPRIMIENDO ARCHIVO.------------------
 
     if not os.path.exists(path):
