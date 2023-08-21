@@ -24,6 +24,11 @@ PROMPT_MIGRACION = """
     . \n
 """
 
+### ModuleNotFoundError: no module named Python Error [Fixed]
+### Make sure modules are spelled correctly and capitalization.
+### Make sure you use the right paths
+### Make sure modules are in the right casing
+
 def main():
     # obtener la llave de openai desde el archivo .env
     openai.api_key = os.getenv("OPENAI_API_KEY")
