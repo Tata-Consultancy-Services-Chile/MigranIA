@@ -12,7 +12,17 @@ if __name__ == "__main__":
     botConMigranIA.context("Eres un developer senior.")
 
     print("🤖 [bold green]Migracion asistida por ChatGPT[/bold green]")
-    origin_path =  typer.prompt("\nIngrese ruta de fuentes a migrar :")
-    origin_tech =  typer.prompt("\nIngrese tecnologia de Origen  :")
-    destiny_tech = typer.prompt("\nIngrese tecnologia de Destino :")
-    botConMigranIA.migrar(origin_path, origin_tech, destiny_tech)
+
+    working = True
+
+    while working:
+        origin_path =  typer.prompt("\nIngrese ruta de fuentes a migrar :")
+        origin_tech =  typer.prompt("\nIngrese tecnologia de Origen  :")
+        destiny_tech = typer.prompt("\nIngrese tecnologia de Destino :")
+        status = botConMigranIA.migrar(origin_path, origin_tech, destiny_tech)
+        if status:
+            print("Migracion exitosa")
+            working=False
+        else:
+            print("Error")
+            working=True

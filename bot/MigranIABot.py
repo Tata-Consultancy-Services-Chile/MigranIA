@@ -51,8 +51,9 @@ class MigranIABot:
         self.destiny_tech = destiny_tech
         if not os.path.exists(origin_path):
             self.salir("\n * El directorio '"+origin_path+"' especificado No existe", -1)
- 
+            return False
         self.findFiles(origin_path, origin_tech)
+        return True
         
     def findFiles(self, pathFiles, origin_tech):           
         if "java" in origin_tech:     
