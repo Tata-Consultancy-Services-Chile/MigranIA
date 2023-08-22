@@ -17,7 +17,7 @@ PROMPT_MIGRACION = """
     @@@@NOMBRE ARCHIVO
     CONTENIDO CODIGO MIGRADO
     #############################################
-
+    
     No agregue espacios en blanco despues de la ultima linea de codigo, ya que esto puede generar errores en la migracion
     No coloques comentarios en el codigo, ya que esto puede generar errores en la migracion
     No menciones sugerencias ni acciones dentro del codigo, si quieres realizarlo comentalo en formato de comentario
@@ -53,7 +53,7 @@ def main():
     responseIA = openai.ChatCompletion.create(
         model="gpt-3.5-turbo", messages=messages)
     
-    #print(responseIA)
+    print(responseIA)
     
     response_content = responseIA.choices[0].message.content
     messages.append({"role": "assistant", "content": response_content})
