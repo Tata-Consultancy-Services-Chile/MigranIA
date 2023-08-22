@@ -1,4 +1,0 @@
-# MigranIA
-
-
-sk-qluQeCzhQ8hvpEp0SInoT3BlbkFJIDDQDNW59YFH7OyZJ955Gp7Ok
