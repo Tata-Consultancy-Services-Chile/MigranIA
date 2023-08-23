@@ -13,6 +13,7 @@
 ### Martín Vergara B.
 ### 
 
+import logging
 import os
 import sys
 import openai  # pip install openai
@@ -26,6 +27,7 @@ from datetime import datetime
 class MigranIABot:
 
     def __init__(self, api_key):
+        logging.basicConfig(level=logging.DEBUG)
         self.api_key = api_key
         self.messages = []
         self.response = ""
@@ -66,17 +68,16 @@ class MigranIABot:
         self.destiny_tech = destiny_tech
         if not os.path.exists(origin_path):
             self.salir("\n * El directorio '"+origin_path+"' especificado No existe", -1)
-            return False
         self.findFiles(origin_path, origin_tech)
         return True
         
     def findFiles(self, pathFiles, origin_tech):           
         if "java" in origin_tech:     
-            print(pathFiles)
+            logging.info(pathFiles)
             for root, dirs, files in os.walk(pathFiles, topdown=False):
                 for name in files:
                     if name.endswith(".java"):
-                        print("name:"+name)
+                        logging.info("name:"+name)
                         self.migraSource(root,name)
         else:
             self.salir("\n * Lenguage de origen '" + origin_tech+ "' Aun no se encuentra implementado para traducir. \n Intente con Java !!! ", -2)
@@ -142,21 +143,21 @@ class MigranIABot:
         
         ###get current path
         currentpath = os.path.dirname(os.path.realpath(__file__))
-        print("currentpath:"+currentpath)
+##        print("currentpath1111:"+currentpath)
+        logging.info("os.getcwd():"+os.getcwd())
+##        self.salir("saliendo!!!!!",-1)
 
-
-        outputmainfolder = currentpath +"..\\output" + relativepath 
-        print("outputmainfolder:"+outputmainfolder)
-
+        outputmainfolder = currentpath +"\\output" + relativepath 
+##        print("outputmainfolder:"+outputmainfolder)
 
         if not os.path.exists(outputmainfolder):
             try:
                 subprocess.run(["mkdir", outputmainfolder], shell=True, check=True)                
             except subprocess.CalledProcessError as e:
-                print("No se pudo crear la carpeta '{outputmainfolder}': {e}")     
+                logging.error("No se pudo crear la carpeta '{outputmainfolder}': {e}")     
 
         path = outputmainfolder +"\\"+ filename
-        print("creando  archivo  =>"+path)
+        logging.info("creando  archivo  =>"+path)
         file = open(path,"w")
         file.write(content)
         file.close()        
