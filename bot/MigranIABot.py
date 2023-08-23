@@ -61,6 +61,7 @@ class MigranIABot:
             for root, dirs, files in os.walk(pathFiles, topdown=False):
                 for name in files:
                     if name.endswith(".java"):
+                        print("name:"+name)
                         self.migraSource(root,name)
         else:
             self.salir("\n * Lenguage de origen '" + origin_tech+ "' Aun no se encuentra implementado para traducir. \n Intente con Java !!! ", -2)
@@ -82,8 +83,8 @@ class MigranIABot:
         
         
         prompt = self.PROMPT_MIGRACION.format(fuentes=subPrompt,
-                                        tecnologia_original=origin_tech, 
-                                        tecnologia_destino=destiny_tech)
+                                        tecnologia_original=self.origin_tech, 
+                                        tecnologia_destino=self.destiny_tech)
 
         requestIA = prompt
         
@@ -126,7 +127,13 @@ class MigranIABot:
         
         ###get current path
         currentpath = os.path.dirname(os.path.realpath(__file__))
-        outputmainfolder = currentpath +"\\output" + relativepath 
+        print("currentpath:"+currentpath)
+
+
+        outputmainfolder = currentpath +"..\\output" + relativepath 
+        print("outputmainfolder:"+outputmainfolder)
+
+
         if not os.path.exists(outputmainfolder):
             try:
                 subprocess.run(["mkdir", outputmainfolder], shell=True, check=True)                
