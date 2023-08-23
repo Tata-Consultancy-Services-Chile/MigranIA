@@ -59,8 +59,27 @@ class MigranIABot:
         self.origin_tech = ""
         self.destiny_tech = ""
 
-        self.response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=self.messages)
+        try:
+            self.response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo", messages=self.messages)
+
+            if self.response == "" or len (self.response)== 0:
+                logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
+                self.salir("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.", -1)
+
+        except openai.error.APIError as e:
+        #Handle API error here, e.g. retry or log
+            logging.error(f"OpenAI API returned an API Error: {e}")
+            self.salir(f"OpenAI API returned an API Error: {e}",-10)
+        except openai.error.APIConnectionError as e:
+        #Handle connection error here
+            logging.error(f"Failed to connect to OpenAI API: {e}")
+            self.salir(f"Failed to connect to OpenAI API: {e}",-10)
+        except openai.error.RateLimitError as e:
+        #Handle rate limit error (we recommend using exponential backoff)
+            logging.error(f"OpenAI API request exceeded rate limit: {e}")
+            self.salir(f"OpenAI API request exceeded rate limit: {e}",-10)
+
 
     def migrar(self, origin_path, origin_tech, destiny_tech):
         self.origin_path = origin_path
@@ -102,18 +121,41 @@ class MigranIABot:
                                         tecnologia_original=self.origin_tech, 
                                         tecnologia_destino=self.destiny_tech)
 
-        requestIA = prompt
+        requestia = prompt
         
         # Contexto del asistente
         context = {"role": "assistant", "content": "Eres un developer senior."}
         messages = [context]
         
-        messages.append({"role": "user", "content": requestIA})
-        responseIA = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo", messages=messages)        
-            
-        response_content = responseIA.choices[0].message.content        
+        messages.append({"role": "user", "content": requestia})
+
+        try:
+            responseia = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo", messages=messages)   
+
+            if self.response == "" or len (self.response)== 0:
+                logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
+                self.salir("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.", -1)
+
+        except openai.error.APIError as e:
+            #Handle API error here, e.g. retry or log
+            logging.error(f"OpenAI API returned an API Error: {e}")
+            self.salir(f"OpenAI API returned an API Error: {e}",-10)
+        except openai.error.APIConnectionError as e:
+            #Handle connection error here
+            logging.error(f"Failed to connect to OpenAI API: {e}")
+            self.salir(f"Failed to connect to OpenAI API: {e}",-10)
+        except openai.error.RateLimitError as e:
+             #Handle rate limit error (we recommend using exponential backoff)
+            logging.error(f"OpenAI API request exceeded rate limit: {e}")
+            self.salir(f"OpenAI API request exceeded rate limit: {e}",-10)
+
+        response_content = responseia.choices[0].message.content        
         messages.append({"role": "assistant", "content": response_content})
+
+        if response_content == "" or len (response_content)== 0:
+            logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
+            self.salir("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.", -1)
 
         isNameFile = True
         nameFile =""
@@ -144,11 +186,10 @@ class MigranIABot:
         ###get current path
         currentpath = os.path.dirname(os.path.realpath(__file__))
 ##        print("currentpath1111:"+currentpath)
-        logging.info("os.getcwd():"+os.getcwd())
+##        logging.info("os.getcwd():"+os.getcwd())
 ##        self.salir("saliendo!!!!!",-1)
 
         outputmainfolder = currentpath +"\\output" + relativepath 
-##        print("outputmainfolder:"+outputmainfolder)
 
         if not os.path.exists(outputmainfolder):
             try:
