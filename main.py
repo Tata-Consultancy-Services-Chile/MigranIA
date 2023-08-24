@@ -9,11 +9,11 @@ from rich.table import Table
 if __name__ == "__main__":
 
     botConMigranIA = MigranIABot(os.getenv("OPENAI_API_KEY"))
-    botConMigranIA.context("Eres un developer senior.")
+    
 
     print("🤖 [bold green]Migracion asistida por ChatGPT[/bold green]")
 
-    working = True
+    working = botConMigranIA.context("Eres un developer senior.")
 
     while working:
         origin_path =  typer.prompt("\nIngrese ruta de fuentes a migrar :")
