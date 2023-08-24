@@ -27,6 +27,7 @@ from datetime import datetime
 class MigranIABot:
 
     def __init__(self, api_key):
+        self.currentlypath=os.getcwd()
         filenamelog=self.creararchivolog()
         logging.basicConfig(filename=filenamelog, level=logging.DEBUG)
         self.api_key = api_key
@@ -88,7 +89,9 @@ class MigranIABot:
         self.destiny_tech = destiny_tech
         if not os.path.exists(origin_path):
             return self.error("\n * El directorio '"+origin_path+"' especificado No existe", -1)            
-        self.findFiles(origin_path, origin_tech)
+        
+        if not self.findFiles(origin_path, origin_tech):
+            return False
         return True
         
     def findFiles(self, pathFiles, origin_tech):           
@@ -107,8 +110,8 @@ class MigranIABot:
 
 
     def creararchivolog(self):
-        currentlypath=os.getcwd()
-        logpath=currentlypath+"\\log"
+        
+        logpath=self.currentlypath+"\\log"
 
         if not os.path.exists(logpath):
             try:
@@ -148,10 +151,11 @@ class MigranIABot:
         messages.append({"role": "assistant", "content": requestia})
 
         try:
+            ## haciendo la pregunta a CHATGPT
             responseia = openai.ChatCompletion.create(
             model="gpt-3.5-turbo", messages=messages)   
 
-            if self.response == "" or len (self.response)== 0:
+            if responseia == "" or len (responseia)== 0:
                 ###logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
                 return self.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.", -1)
 
@@ -168,6 +172,7 @@ class MigranIABot:
             ###logging.error(f"OpenAI API request exceeded rate limit: {e}")
             return self.error(f"OpenAI API request exceeded rate limit: {e}",-10)
 
+         ## Obteniendo la respuesta de CHATGPT
         response_content = responseia.choices[0].message.content        
 
         self.historiaIA(filename,prompt, response_content)
