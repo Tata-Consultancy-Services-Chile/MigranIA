@@ -27,7 +27,8 @@ from datetime import datetime
 class MigranIABot:
 
     def __init__(self, api_key):
-        ###logging.basicConfig(level=###logging.DEBUG)
+        filenamelog=self.creararchivolog()
+        logging.basicConfig(filename=filenamelog, level=logging.DEBUG)
         self.api_key = api_key
         self.messages = []
         self.response = ""
@@ -105,6 +106,20 @@ class MigranIABot:
             return self.error("\n * Lenguage de origen '" + origin_tech+ "' Aun no se encuentra implementado para traducir. \n Intente con Java !!! ", -2)
 
 
+    def creararchivolog(self):
+        currentlypath=os.getcwd()
+        logpath=currentlypath+"\\log"
+
+        if not os.path.exists(logpath):
+            try:
+                subprocess.run(["mkdir", logpath], shell=True, check=True)                
+            except subprocess.CalledProcessError as e:
+                return self.error("No se pudo crear la carpeta log': {e}",-1)     
+
+        temporarylog = datetime.now().strftime("%Y%m%d%H%M%S")
+        filog=logpath+"\\log"+temporarylog+".txt"
+        return filog   
+    
     def readContentFromPath(self,path):
         with open(path, "r", encoding="utf-8") as f:
             content = f.read()
@@ -220,7 +235,7 @@ class MigranIABot:
             try:
                 subprocess.run(["mkdir", outputmainfolder], shell=True, check=True)                
             except subprocess.CalledProcessError as e:
-                return self.error("No se pudo crear la carpeta '{outputmainfolder}': {e}")     
+                return self.error("No se pudo crear la carpeta '{outputmainfolder}': {e}",-1)     
 
         path = outputmainfolder +"\\"+ filename
         logging.info("creando  archivo  =>"+path)
