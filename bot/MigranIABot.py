@@ -27,7 +27,7 @@ from datetime import datetime
 class MigranIABot:
 
     def __init__(self, api_key):
-        logging.basicConfig(level=logging.DEBUG)
+        ###logging.basicConfig(level=###logging.DEBUG)
         self.api_key = api_key
         self.messages = []
         self.response = ""
@@ -64,20 +64,20 @@ class MigranIABot:
                 model="gpt-3.5-turbo", messages=self.messages)
 
             if self.response == "" or len (self.response)== 0:
-                logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
+                ###logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
                 return self.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.", -1)
             return True
         except openai.error.APIError as e:
         #Handle API error here, e.g. retry or log
-            logging.error(f"OpenAI API returned an API Error: {e}")
+            ###logging.error(f"OpenAI API returned an API Error: {e}")
             return self.error(f"OpenAI API returned an API Error: {e}",-10)
         except openai.error.APIConnectionError as e:
         #Handle connection error here
-            logging.error(f"Failed to connect to OpenAI API: {e}")
+            ###logging.error(f"Failed to connect to OpenAI API: {e}")
             return self.error(f"Failed to connect to OpenAI API: {e}",-10)
         except openai.error.RateLimitError as e:
         #Handle rate limit error (we recommend using exponential backoff)
-            logging.error(f"OpenAI API request exceeded rate limit: {e}")
+            ###logging.error(f"OpenAI API request exceeded rate limit: {e}")
             return self.error(f"OpenAI API request exceeded rate limit: {e}",-10)
 
 
@@ -93,11 +93,11 @@ class MigranIABot:
     def findFiles(self, pathFiles, origin_tech):           
         #TODO : Tarea pendiente identificar la extencion de la tecnologia de origen
         if origin_tech.startswith("java") or len(origin_tech)>0:     
-            logging.info(pathFiles)
+            ###logging.info(pathFiles)
             for root, dirs, files in os.walk(pathFiles, topdown=False):
                 for name in files:
                     if name.endswith(".java"):
-                        logging.info("name:"+name)
+                        ###logging.info("name:"+name)
                         if not self.migraSource(root,name):
                             return False
             return True
@@ -123,41 +123,43 @@ class MigranIABot:
         prompt = self.PROMPT_MIGRACION.format(fuentes=subPrompt,
                                         tecnologia_original=self.origin_tech, 
                                         tecnologia_destino=self.destiny_tech)
-
+        
         requestia = prompt
         
         # Contexto del asistente
         context = {"role": "assistant", "content": "Eres un developer senior."}
         messages = [context]
         
-        messages.append({"role": "user", "content": requestia})
+        messages.append({"role": "assistant", "content": requestia})
 
         try:
             responseia = openai.ChatCompletion.create(
             model="gpt-3.5-turbo", messages=messages)   
 
             if self.response == "" or len (self.response)== 0:
-                logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
+                ###logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
                 return self.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.", -1)
 
         except openai.error.APIError as e:
             #Handle API error here, e.g. retry or log
-            logging.error(f"OpenAI API returned an API Error: {e}")
+            ###logging.error(f"OpenAI API returned an API Error: {e}")
             return self.error(f"OpenAI API returned an API Error: {e}",-10)
         except openai.error.APIConnectionError as e:
             #Handle connection error here
-            logging.error(f"Failed to connect to OpenAI API: {e}")
+            ###logging.error(f"Failed to connect to OpenAI API: {e}")
             return self.error(f"Failed to connect to OpenAI API: {e}",-10)
         except openai.error.RateLimitError as e:
              #Handle rate limit error (we recommend using exponential backoff)
-            logging.error(f"OpenAI API request exceeded rate limit: {e}")
+            ###logging.error(f"OpenAI API request exceeded rate limit: {e}")
             return self.error(f"OpenAI API request exceeded rate limit: {e}",-10)
 
         response_content = responseia.choices[0].message.content        
+
+        self.historiaIA(filename,prompt, response_content)
         messages.append({"role": "assistant", "content": response_content})
 
         if response_content == "" or len (response_content)== 0:
-            logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
+            ###logging.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.")  
             return self.error("ChatGTP no ha retornado ninguna respuesta a su consulta, favor intente más tarde.", -1)
 
         isNameFile = True
@@ -180,7 +182,23 @@ class MigranIABot:
                     else:
                         return False
                     
-        return True        
+        return True
+
+    def historiaIA(self,filename,request, response):
+        ###Crea un archivo en formato html 
+        # que donde pueda almacenar en un textarea el request y en otro text area el response
+        path = os.getcwd() +"\\"+ filename + ".html"
+        file = open(path,"w")
+        file.write("""
+                   <html>
+                    <body>
+                        <textarea rows="45" cols="80">{request}</textarea>
+                        <hr/>
+                        <textarea rows="45" cols="80">{response}</textarea>
+                    </body>
+                   </html>
+                   """.format(request=request,response=response))
+        file.close()
 
     def createSource(self,temporarypath, filename,content):
         table = Table(filename)
@@ -193,7 +211,7 @@ class MigranIABot:
         ###get current path
         currentpath = os.path.dirname(os.path.realpath(__file__))
 ##        print("currentpath1111:"+currentpath)
-##        logging.info("os.getcwd():"+os.getcwd())
+##        ###logging.info("os.getcwd():"+os.getcwd())
 ##        self.salir("saliendo!!!!!",-1)
 
         outputmainfolder = currentpath +"\\output" + relativepath 
@@ -202,7 +220,7 @@ class MigranIABot:
             try:
                 subprocess.run(["mkdir", outputmainfolder], shell=True, check=True)                
             except subprocess.CalledProcessError as e:
-                return logging.error("No se pudo crear la carpeta '{outputmainfolder}': {e}")     
+                return self.error("No se pudo crear la carpeta '{outputmainfolder}': {e}")     
 
         path = outputmainfolder +"\\"+ filename
         logging.info("creando  archivo  =>"+path)
@@ -216,5 +234,5 @@ class MigranIABot:
         return True
 
     def error(self, mensaje, codSalida):
-        print(mensaje)
+        logging.error(mensaje)
         return False
