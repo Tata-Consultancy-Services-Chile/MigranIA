@@ -24,6 +24,12 @@ import subprocess
 import shutil
 from datetime import datetime
 
+import sys 
+sys.path.append('..')
+
+from util import utilfunctions
+
+
 class MigranIABot:
 
     def __init__(self, api_key):
@@ -46,7 +52,6 @@ class MigranIABot:
         No coloques comentarios en el codigo, ya que esto puede generar errores en la migracion
         No menciones sugerencias ni acciones dentro del codigo, si quieres realizarlo comentalo en formato de comentario
         NO agregar ``` o carecteres relacionados a comentarios en ninguna linea del codigo
-       
         . \n
         """
             
@@ -134,10 +139,7 @@ class MigranIABot:
         sources = self.readContentFromPath(fileNameAndPath)
             
         temporarypath = path
-        
         subPrompt = filename + "\n" +sources
-        
-        
         prompt = self.PROMPT_MIGRACION.format(fuentes=subPrompt,
                                         tecnologia_original=self.origin_tech, 
                                         tecnologia_destino=self.destiny_tech)
@@ -175,7 +177,7 @@ class MigranIABot:
          ## Obteniendo la respuesta de CHATGPT
         response_content = responseia.choices[0].message.content        
 
-        self.historiaIA(filename,prompt, response_content)
+        
         messages.append({"role": "assistant", "content": response_content})
 
         if response_content == "" or len (response_content)== 0:
@@ -185,7 +187,7 @@ class MigranIABot:
         isNameFile = True
         nameFile =""
         contentFile =""
-
+        comentarios=""
         for line in response_content.splitlines():
             if isNameFile:
                 if line.startswith('@@@@'):
@@ -196,28 +198,28 @@ class MigranIABot:
                     contentFile += line + "\n"
                 else:
                     if self.createSource(temporarypath, nameFile, contentFile):
-                        isNameFile=True
-                        nameFile =""
-                        contentFile =""
+                        if nameFile!="":
+                            isNameFile=True
+                            nameFile =""
+                            contentFile =""
+                        else:
+                            print(line)
+                            comentarios+= line + "\n"
                     else:
                         return False
-                    
+
+            self.historIA(filename,prompt, response_content, comentarios)        
         return True
 
-    def historiaIA(self,filename,request, response):
+    def historIA(self,filename,request, response, comentarios):
         ###Crea un archivo en formato html 
         # que donde pueda almacenar en un textarea el request y en otro text area el response
+        ## createhtml2(request, response, languageorigen, languagedestino,  comentarios )
+        htmfile=utilfunctions.createhtml2(request, response, self.origin_tech,self.destiny_tech, comentarios)
+
         path = os.getcwd() +"\\"+ filename + ".html"
         file = open(path,"w")
-        file.write("""
-                   <html>
-                    <body>
-                        <textarea rows="45" cols="80">{request}</textarea>
-                        <hr/>
-                        <textarea rows="45" cols="80">{response}</textarea>
-                    </body>
-                   </html>
-                   """.format(request=request,response=response))
+        file.write(htmfile)
         file.close()
 
     def createSource(self,temporarypath, filename,content):
@@ -256,3 +258,8 @@ class MigranIABot:
     def error(self, mensaje, codSalida):
         logging.error(mensaje)
         return False
+
+
+
+     
+        

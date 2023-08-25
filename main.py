@@ -1,5 +1,3 @@
-
-
 from bot.MigranIABot import MigranIABot
 import os
 import typer  # pip install "typer[all]"
