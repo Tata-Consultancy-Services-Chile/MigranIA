@@ -1,5 +1,5 @@
     
-def extractZipFile(self, filename,outputFolder):
+def extractzipfile(self, filename,outputFolder):
     if not os.path.exists(outputFolder):
         os.mkdir(outputFolder)
 
@@ -12,22 +12,7 @@ def extractZipFile(self, filename,outputFolder):
     return ""
 
 
-def createhtml(request, response, comentarios ):
-    htmlstr = """
-                   <html>
-                    <body>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx999999999999
-                        {comentarios} <br/>
-                        <textarea rows="45" cols="80">{request}</textarea>
-                        <hr/>
-                        <textarea rows="45" cols="80">{response}</textarea>
-                    </body>
-                   </html>
-                   """.format(request=request,response=response,comentarios=comentarios)
-    return htmlstr
-
-
-
-def createhtml2(request, response, languageorigen, languagedestino,  comentarios ):
+def createhtml(request, response, languageorigen, languagedestino,  comentarios ):
 
     htmlstr="""
                     <!DOCTYPE html>

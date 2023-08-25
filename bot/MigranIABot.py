@@ -23,10 +23,8 @@ from rich.table import Table
 import subprocess
 import shutil
 from datetime import datetime
-
 import sys 
 sys.path.append('..')
-
 from util import utilfunctions
 
 
@@ -212,10 +210,8 @@ class MigranIABot:
         return True
 
     def historIA(self,filename,request, response, comentarios):
-        ###Crea un archivo en formato html 
-        # que donde pueda almacenar en un textarea el request y en otro text area el response
-        ## createhtml2(request, response, languageorigen, languagedestino,  comentarios )
-        htmfile=utilfunctions.createhtml2(request, response, self.origin_tech,self.destiny_tech, comentarios)
+
+        htmfile=utilfunctions.createhtml(request, response, self.origin_tech,self.destiny_tech, comentarios)
 
         path = os.getcwd() +"\\"+ filename + ".html"
         file = open(path,"w")
