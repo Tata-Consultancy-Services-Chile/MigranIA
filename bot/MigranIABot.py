@@ -256,6 +256,7 @@ class MigranIABot:
         return True
 
     def error(self, mensaje, codSalida):
+        print(mensaje)
         logging.error(mensaje)
         return False
 
