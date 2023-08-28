@@ -15,6 +15,7 @@
 
 import logging
 import os
+import shutil
 import sys
 import openai  # pip install openai
 import typer  # pip install "typer[all]"
@@ -33,6 +34,8 @@ class MigranIABot:
         self.currentlypath=os.getcwd()
         filenamelog=self.creararchivolog()
         logging.basicConfig(filename=filenamelog, level=logging.DEBUG)
+        
+
         self.api_key = api_key
         self.messages = []
         self.response = ""
@@ -73,10 +76,19 @@ class MigranIABot:
 
 
     def migrar(self, origin_path, origin_tech, destiny_tech,migration_path):
+
         self.origin_path = origin_path
         self.origin_tech = origin_tech
         self.destiny_tech = destiny_tech
         self.migration_path = migration_path
+
+        if not os.path.exists(self.migration_path):
+            try:
+                subprocess.run(["mkdir", self.migration_path], shell=True, check=True)                
+            except subprocess.CalledProcessError as e:
+                self.error("No se pudo crear la carpeta '{self.migration_path}': {e}",-1)           
+
+
         if not os.path.exists(origin_path):
             return self.error("\n * El directorio '"+origin_path+"' especificado No existe", -1)            
         
@@ -182,23 +194,19 @@ class MigranIABot:
                 if line != self.EOF:
                     if nameFile!="":
                         contentFile += line + "\n"
+                else:
+                    if self.createSource(temporarypath, nameFile, contentFile):
+                        isNameFile=True
+                        nameFile =""
+                        contentFile =""
                     else:
-                        if contentFile!="":
-                            if self.createSource(temporarypath, nameFile, contentFile):
-                                isNameFile=True
-                                nameFile =""
-                                contentFile =""
-                            else:
-                                return False
-                        else:
-                            print(line)
-                            comentarios+= line + "\n"                    
-                    
+                        return False
 
-            self.historIA(filename,prompt, response_content, comentarios)        
+        self.historIA(filename,prompt, response_content, comentarios)        
         return True
 
     def historIA(self,filename,request, response, comentarios):
+        shutil.copyfile(os.getcwd() + "/config/styles.css", self.migration_path + "/styles.css")
         htmfile=utilfunctions.createhtml(request, response, self.origin_tech,self.destiny_tech, comentarios)
         if not os.path.exists(self.migration_path):
             try:
@@ -218,7 +226,7 @@ class MigranIABot:
 
         relativepath= temporarypath.replace(self.origin_path, "")
 
-        outputmainfolder = self.migration_path +"\\migration" + relativepath 
+        outputmainfolder = self.migration_path +"\\fuentes" + relativepath 
 
         if not os.path.exists(outputmainfolder):
             try:

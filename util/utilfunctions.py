@@ -18,6 +18,8 @@ def extractzipfile(filename,outputFolder):
 
 def createhtml( request, response, languageorigen, languagedestino,  comentarios ):
     htmlTemplate = readfile(os.getcwd() + "/config/report.html")
+    #copy file to output folder
+    
     htmlstr=htmlTemplate.format(request=request,response=response,comentarios=comentarios,languageorigen=languageorigen,languagedestino=languagedestino)
     return htmlstr
 
