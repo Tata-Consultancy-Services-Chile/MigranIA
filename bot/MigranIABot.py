@@ -21,7 +21,6 @@ import typer  # pip install "typer[all]"
 from rich import print  # pip install rich
 from rich.table import Table
 import subprocess
-import shutil
 from datetime import datetime
 import sys 
 sys.path.append('..')
@@ -37,21 +36,8 @@ class MigranIABot:
         self.api_key = api_key
         self.messages = []
         self.response = ""
-        self.EOF = "#############################################"
-        self.PROMPT_MIGRACION = """
-        Migra el siguiente codigo fuentes : \n{fuentes}\n el cual esta desarrollado en {tecnologia_original}, debes migrar esto a {tecnologia_destino},
-        quiero que tu respuesta este en el siguiento formato
-        
-        @@@@NOMBRE ARCHIVO
-        CONTENIDO CODIGO MIGRADO
-        #############################################
-        considera que los fuentes no vienen en orden logico, pero debes confiar que los import y las piezas mencionadas existen
-        No agregue espacios en blanco despues de la ultima linea de codigo, ya que esto puede generar errores en la migracion
-        No coloques comentarios en el codigo, ya que esto puede generar errores en la migracion
-        No menciones sugerencias ni acciones dentro del codigo, si quieres realizarlo comentalo en formato de comentario
-        NO agregar ``` o carecteres relacionados a comentarios en ninguna linea del codigo
-        . \n
-        """
+        self.EOF = "***-EOF-***"
+        self.PROMPT_MIGRACION = self.readContentFromPath("./config/prompt.gpt")
             
     def context(self, context):
         context = {"role": "system",
@@ -86,10 +72,11 @@ class MigranIABot:
             return self.error(f"OpenAI API request exceeded rate limit: {e}",-10)
 
 
-    def migrar(self, origin_path, origin_tech, destiny_tech):
+    def migrar(self, origin_path, origin_tech, destiny_tech,migration_path):
         self.origin_path = origin_path
         self.origin_tech = origin_tech
         self.destiny_tech = destiny_tech
+        self.migration_path = migration_path
         if not os.path.exists(origin_path):
             return self.error("\n * El directorio '"+origin_path+"' especificado No existe", -1)            
         
@@ -193,27 +180,33 @@ class MigranIABot:
                     isNameFile=False
             else:
                 if line != self.EOF:
-                    contentFile += line + "\n"
-                else:
-                    if self.createSource(temporarypath, nameFile, contentFile):
-                        if nameFile!="":
-                            isNameFile=True
-                            nameFile =""
-                            contentFile =""
+                    if nameFile!="":
+                        contentFile += line + "\n"
+                    else:
+                        if contentFile!="":
+                            if self.createSource(temporarypath, nameFile, contentFile):
+                                isNameFile=True
+                                nameFile =""
+                                contentFile =""
+                            else:
+                                return False
                         else:
                             print(line)
-                            comentarios+= line + "\n"
-                    else:
-                        return False
+                            comentarios+= line + "\n"                    
+                    
 
             self.historIA(filename,prompt, response_content, comentarios)        
         return True
 
     def historIA(self,filename,request, response, comentarios):
-
         htmfile=utilfunctions.createhtml(request, response, self.origin_tech,self.destiny_tech, comentarios)
+        if not os.path.exists(self.migration_path):
+            try:
+                subprocess.run(["mkdir", self.migration_path], shell=True, check=True)                
+            except subprocess.CalledProcessError as e:
+                return self.error("No se pudo crear la carpeta '{self.migration_path}': {e}",-1)
 
-        path = os.getcwd() +"\\"+ filename + ".html"
+        path = self.migration_path +"\\"+ filename + ".html"
         file = open(path,"w")
         file.write(htmfile)
         file.close()
@@ -223,16 +216,9 @@ class MigranIABot:
         table.add_row(content)
         print(table)    
 
-        ### temporarypath = datetime.now().strftime("%Y%m%d%H%M%S")
         relativepath= temporarypath.replace(self.origin_path, "")
-        
-        ###get current path
-        currentpath = os.path.dirname(os.path.realpath(__file__))
-##        print("currentpath1111:"+currentpath)
-##        ###logging.info("os.getcwd():"+os.getcwd())
-##        self.salir("saliendo!!!!!",-1)
 
-        outputmainfolder = currentpath +"\\output" + relativepath 
+        outputmainfolder = self.migration_path +"\\migration" + relativepath 
 
         if not os.path.exists(outputmainfolder):
             try:
@@ -246,10 +232,6 @@ class MigranIABot:
         file.write(content)
         file.close()   
         return True     
-
-
-    def save_response_IA(self,response):
-        return True
 
     def error(self, mensaje, codSalida):
         print(mensaje)

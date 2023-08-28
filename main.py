@@ -8,16 +8,18 @@ if __name__ == "__main__":
 
     botConMigranIA = MigranIABot(os.getenv("OPENAI_API_KEY"))
     
-
     print("🤖 [bold green]Migracion asistida por ChatGPT[/bold green]")
+
+    
 
     working = botConMigranIA.context("Eres un developer senior.")
 
-    while working:
+    while working:        
         origin_path =  typer.prompt("\nIngrese ruta de fuentes a migrar :")
         origin_tech =  typer.prompt("\nIngrese tecnologia de Origen  :")
         destiny_tech = typer.prompt("\nIngrese tecnologia de Destino :")
-        status = botConMigranIA.migrar(origin_path, origin_tech, destiny_tech)
+        migration_path =  typer.prompt("\nIngrese carpeta de resultado de migracion :")
+        status = botConMigranIA.migrar(origin_path, origin_tech, destiny_tech,migration_path)
         if status:
             print("Migracion exitosa")
             working=False
