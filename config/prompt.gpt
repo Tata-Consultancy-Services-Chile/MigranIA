@@ -1,0 +1,14 @@
+Migra el siguiente codigo fuentes : \n{fuentes}\n el cual esta desarrollado en {tecnologia_original}, debes migrar esto a {tecnologia_destino},
+quiero que tu respuesta este en el siguiento formato
+
+@@@@NOMBRE ARCHIVO
+{CONTENIDO CODIGO MIGRADO}
+***-EOF-***
+{CONTENIDO COMENTARIOS DE MIGRACION}
+
+considera que los fuentes no vienen en orden logico, pero debes confiar que los import y las piezas mencionadas existen
+No agregue espacios en blanco despues de la ultima linea de codigo, ya que esto puede generar errores en la migracion
+No coloques comentarios en el codigo, ya que esto puede generar errores en la migracion
+No menciones sugerencias ni acciones dentro del codigo, si quieres realizarlo comentalo en formato de comentario
+NO agregar ``` o carecteres relacionados a comentarios en ninguna linea del codigo
+Quita acentos o caracteres especiales a todo comentario o texto que no sea codigo
