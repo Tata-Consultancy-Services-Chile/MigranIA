@@ -98,11 +98,12 @@ class MigranIABot:
         
     def findFiles(self, pathFiles, origin_tech):           
         #TODO : Tarea pendiente identificar la extencion de la tecnologia de origen
-        if origin_tech.startswith("java") or len(origin_tech)>0:     
+        if origin_tech.startswith("java")  or len(origin_tech)>0:   
             ###logging.info(pathFiles)
             for root, dirs, files in os.walk(pathFiles, topdown=False):
                 for name in files:
-                    if name.endswith(".java"):
+                    #Identifica las extenciones de archivos a migrar
+                    if name.endswith(".java") or len(origin_tech)>0:
                         ###logging.info("name:"+name)
                         if not self.migraSource(root,name):
                             return False
